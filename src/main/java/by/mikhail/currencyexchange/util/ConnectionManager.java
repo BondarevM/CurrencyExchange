@@ -1,21 +1,12 @@
 package by.mikhail.currencyexchange.util;
 
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-
-
 public class ConnectionManager {
-    private static final String URL = "jdbc:sqlite:C:\\Users\\GigaPC\\Desktop\\Java\\PetProjects\\CurrencyExchange\\src\\main\\resources\\database";
+    private static final String URL_KEY = "db.url";
 
-    public static void main(String[] args) {
-        Class<Driver> driverClass = Driver.class;
-
-        ConnectionManager.getConnection();
-        System.out.println("kek");
-    }
     static {
         loadDriver();
     }
@@ -30,8 +21,7 @@ public class ConnectionManager {
 
     public static Connection getConnection(){
         try {
-            Connection connection = DriverManager.getConnection(URL);
-            return connection;
+            return DriverManager.getConnection(PropertiesUtil.getProperty(URL_KEY));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
