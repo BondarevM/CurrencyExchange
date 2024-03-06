@@ -8,5 +8,8 @@
 <h1><%= "Hello World!" %></h1>
 <br/>
 <a href="hello-servlet">Hello Servlet</a>
+<div>
+<a href="/currencies">Currencies</a>
+</div>
 </body>
 </html>
