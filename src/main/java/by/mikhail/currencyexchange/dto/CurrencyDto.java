@@ -15,6 +15,7 @@ public class CurrencyDto {
         Sign = sign;
     }
 
+
     public Integer getID() {
         return ID;
     }

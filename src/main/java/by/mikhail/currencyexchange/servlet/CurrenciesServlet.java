@@ -12,25 +12,32 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
-
-
-@WebServlet("/currency/*")
-public class CurrencyServlet extends HttpServlet {
+@WebServlet("/currencies")
+public class CurrenciesServlet extends HttpServlet {
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final CurrencyService currencyService = CurrencyService.getInstance();
+    private final CurrencyService currencyService = CurrencyService.getInstance();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        String code = req.getPathInfo().substring(1);
-        CurrencyDto currency = currencyService.findByCode(code);
 
-        String currencyJson = objectMapper.writeValueAsString(currency);
         try (PrintWriter writer = resp.getWriter()) {
-            writer.write(currencyJson);
+            List<CurrencyDto> currencies = currencyService.findAll();
+            String currenciesJson = objectMapper.writeValueAsString(currencies);
+            writer.write(currenciesJson);
+
+
+//            currencyService.findAll().forEach(currencyDto -> {
+//                writer.write("""
+//                        <li>
+//                            ID: %s  Code: %s  FullName: %s  Sign: %s
+//                        </li>
+//                        """.formatted(currencyDto.getID(),currencyDto.getCode(),currencyDto.getFullName(),currencyDto.getSign()));
+//
+//            });
+
         }
-
-
     }
 }

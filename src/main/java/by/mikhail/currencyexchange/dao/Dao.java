@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public interface Dao<K, T> {
     List<T> findAll();
-    Optional<T> findById(K id);
+    Optional<T> findByCode(K code);
     void update (T entity);
 
 }
