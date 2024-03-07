@@ -28,6 +28,15 @@ public class CurrencyService {
                 currency.getId(), currency.getCode(), currency.getFullName(), currency.getSign())).findFirst().get();
     }
 
+    public void update(String code, String FullName, String Sign){
+        Currency currency = new Currency();
+        currency.setCode(code);
+        currency.setFullName(FullName);
+        currency.setSign(Sign);
+        currencyDao.update(currency);
+
+    }
+
     public static void main(String[] args) {
         CurrencyDto usd = INSTANCE.findByCode("USD");
         System.out.println(usd);

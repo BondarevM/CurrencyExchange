@@ -28,16 +28,15 @@ public class CurrenciesServlet extends HttpServlet {
             String currenciesJson = objectMapper.writeValueAsString(currencies);
             writer.write(currenciesJson);
 
-
-//            currencyService.findAll().forEach(currencyDto -> {
-//                writer.write("""
-//                        <li>
-//                            ID: %s  Code: %s  FullName: %s  Sign: %s
-//                        </li>
-//                        """.formatted(currencyDto.getID(),currencyDto.getCode(),currencyDto.getFullName(),currencyDto.getSign()));
-//
-//            });
-
         }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String name = req.getParameter("name");
+        String code = req.getParameter("code");
+        String sign = req.getParameter("sign");
+
+        currencyService.update(code, name,sign);
     }
 }

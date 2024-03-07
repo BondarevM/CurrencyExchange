@@ -13,6 +13,10 @@ public class CurrencyDao implements Dao<String, Currency> {
             SELECT ID, Code, FullName, Sign
             from Currencies
             """;
+    private static final String ADD_CURRENCY = """
+            INSERT INTO Currencies
+            VALUES (null,?,?,?);
+            """;
 
     private static final String FIND_BY_CODE = FIND_ALL + """
     WHERE Code = ?
@@ -22,13 +26,7 @@ public class CurrencyDao implements Dao<String, Currency> {
     private CurrencyDao() {
     }
 
-    public static void main(String[] args) throws SQLException {
-        Optional<Currency> usd = INSTANCE.findByCode("asd");
-        System.out.println(usd);
-        if (usd.equals(Optional.empty())){
-            System.out.println("kek");
-        }
-    }
+
 
 
     public static CurrencyDao getInstance() {
@@ -89,6 +87,26 @@ public class CurrencyDao implements Dao<String, Currency> {
 
     @Override
     public void update(Currency entity) {
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement prepareStatement = connection.prepareStatement(ADD_CURRENCY)) {
+            prepareStatement.setString(1,entity.getCode());
+            prepareStatement.setString(2,entity.getFullName());
+            prepareStatement.setString(3, entity.getSign());
 
+            prepareStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public static void main(String[] args) {
+        Currency currency = new Currency();
+        currency.setCode("RUB");
+        currency.setFullName("Rubble");
+        currency.setSign("P");
+
+        INSTANCE.update(currency);
     }
 }
