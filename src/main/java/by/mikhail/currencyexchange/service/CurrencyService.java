@@ -4,6 +4,8 @@ import by.mikhail.currencyexchange.dao.CurrencyDao;
 import by.mikhail.currencyexchange.dto.CurrencyDto;
 import by.mikhail.currencyexchange.entity.Currency;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +20,7 @@ public class CurrencyService {
     }
 
     private final CurrencyDao currencyDao = CurrencyDao.getInstance();
-    public List<CurrencyDto> findAll(){
+    public List<CurrencyDto> findAll() throws SQLException {
         return currencyDao.findAll().stream().map(currency -> new CurrencyDto(
                 currency.getId(),currency.getCode(),currency.getFullName(),currency.getSign()
         )).toList();
@@ -34,13 +36,22 @@ public class CurrencyService {
         currency.setFullName(FullName);
         currency.setSign(Sign);
         currencyDao.update(currency);
+    }
+    public List<String> findAllCodes() throws SQLException {
+        List<String> result = new ArrayList<>();
+        List<String> all = currencyDao.findAll().stream().map(currency -> new String(currency.getCode())).toList();
 
+        return all;
+    }
+    public boolean foundCurrency(String code) throws SQLException {
+        List<String> all = currencyDao.findAll().stream().map(currency -> new String(currency.getCode())).toList();
+        for (String s : all){
+            if (s.equals(code)){
+                return true;
+            }
+        }
+        return false;
     }
 
-    public static void main(String[] args) {
-        CurrencyDto usd = INSTANCE.findByCode("USD");
-        System.out.println(usd);
-
-    }
 
 }

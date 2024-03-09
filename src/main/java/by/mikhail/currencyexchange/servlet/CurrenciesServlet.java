@@ -12,12 +12,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.List;
+
+import static jakarta.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 @WebServlet("/currencies")
 public class CurrenciesServlet extends HttpServlet {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private final CurrencyService currencyService = CurrencyService.getInstance();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
@@ -27,7 +31,8 @@ public class CurrenciesServlet extends HttpServlet {
             List<CurrencyDto> currencies = currencyService.findAll();
             String currenciesJson = objectMapper.writeValueAsString(currencies);
             writer.write(currenciesJson);
-
+        } catch (SQLException e) {
+            resp.sendError(500, "Something is wrong with the database");
         }
     }
 
@@ -37,6 +42,20 @@ public class CurrenciesServlet extends HttpServlet {
         String code = req.getParameter("code");
         String sign = req.getParameter("sign");
 
-        currencyService.update(code, name,sign);
+        if (name == null || code == null || sign == null) {
+            resp.sendError(400, "A required form field is missing");
+            return;
+        }
+        try {
+            if (currencyService.foundCurrency(code)) {
+                resp.sendError(409, "A currency with this code already exists");
+                return;
+            }
+        } catch (SQLException e) {
+            resp.sendError(500, "Something is wrong with the database");
+            return;
+        }
+
+        currencyService.update(code, name, sign);
     }
 }
