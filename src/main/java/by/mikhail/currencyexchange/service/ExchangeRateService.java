@@ -29,23 +29,31 @@ public class ExchangeRateService {
 //        List<ExchangeRateDto> all = INSTANCE.findAll();
 //        System.out.println(all);
 
-        boolean b = INSTANCE.foundExchangeRate("USD", "RUB");
+        boolean b = INSTANCE.foundExchangeRate("RUBUSD");
         System.out.println(b);
 
     }
 
-    public boolean foundExchangeRate(String baseCurrency, String targetCurrency) throws SQLException {
-        List<String> basedCurrencyCodes = exchangeRateDao.findAll().stream().map(exchangeRate ->
+    public ExchangeRateDto findByCode(String code){
+        return exchangeRateDao.findByCode(code).stream().map(exchangeRate -> new ExchangeRateDto(
+                exchangeRate.getId(),exchangeRate.getBaseCurrency(),exchangeRate.getTagretCurrency(),exchangeRate.getRate()
+        )).findFirst().get();
+
+    }
+
+
+    public boolean foundExchangeRate(String codes) throws SQLException {
+        String baseCurrency = codes.substring(0, 3);
+        String targetCurrency = codes.substring(3);
+        List<String> baseCurrencyCodes = exchangeRateDao.findAll().stream().map(exchangeRate ->
                 new String(exchangeRate.getBaseCurrency().getCode())).toList();
 
         List<String> targetCurrencyCodes = exchangeRateDao.findAll().stream().map(exchangeRate ->
                 new String(exchangeRate.getTagretCurrency().getCode())).toList();
 
-        for (String firstCode : basedCurrencyCodes) {
-            for (String secondCode : targetCurrencyCodes) {
-                if (firstCode.equals(baseCurrency) && secondCode.equals(targetCurrency)) {
-                    return true;
-                }
+        for (int i = 0; i < baseCurrencyCodes.size(); i++) {
+            if (baseCurrency.equals(baseCurrencyCodes.get(i)) && targetCurrency.equals(targetCurrencyCodes.get(i))) {
+                return true;
             }
         }
         return false;

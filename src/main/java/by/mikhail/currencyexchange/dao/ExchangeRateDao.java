@@ -20,8 +20,8 @@ public class ExchangeRateDao implements Dao<String, ExchangeRate> {
     }
 
     public static void main(String[] args) throws SQLException {
-        List<ExchangeRate> all = INSTANCE.findAll();
-        System.out.println(all);
+        Optional<ExchangeRate> rate = INSTANCE.findByCode("EURRUB");
+        System.out.println(rate);
 
     }
 
@@ -34,22 +34,23 @@ public class ExchangeRateDao implements Dao<String, ExchangeRate> {
             """;
 
     private final String FIND_BY_CODES = """
-            SELECT *
-            FROM ExchangeRates
-            JOIN Currencies C on C.ID = ExchangeRates.BaseCurrencyId
+            SELECT e.ID, BaseCurrencyId, TargetCurrencyId, Rate
+            FROM ExchangeRates e
+                     JOIN Currencies C on C.ID = e.BaseCurrencyId
             WHERE BaseCurrencyId = (SELECT id
-                                      FROM Currencies
-                                      WHERE Code = ?) AND TargetCurrencyId = (SELECT id
+                                    FROM Currencies
+                                    WHERE Code = ?) AND TargetCurrencyId = (SELECT id
                                                                                 FROM Currencies
                                                                                 WHERE Code = ?);
-            """;
+                        """;
+
     @Override
     public List<ExchangeRate> findAll() throws SQLException {
         List<ExchangeRate> result = new ArrayList<>();
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement prepareStatement = connection.prepareStatement(FIND_ALL)) {
             ResultSet resultSet = prepareStatement.executeQuery();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 result.add(buildExchangeRate(resultSet));
             }
         }
@@ -57,14 +58,28 @@ public class ExchangeRateDao implements Dao<String, ExchangeRate> {
     }
 
 
-
     @Override
     public Optional<ExchangeRate> findByCode(String code) {
+        String baseCurrency = code.substring(0, 3);
+        String targetCurrency = code.substring(3);
+
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement prepareStatement = connection.prepareStatement(FIND_BY_CODES)) {
+            prepareStatement.setString(1, baseCurrency);
+            prepareStatement.setString(2, targetCurrency);
+
+            ResultSet resultSet = prepareStatement.executeQuery();
+
+            if (resultSet.next()) {
+                ExchangeRate exchangeRate = buildExchangeRate(resultSet);
+                return Optional.ofNullable(exchangeRate);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return Optional.empty();
     }
-    public Optional<ExchangeRate> findByCodes(String baseCurrency, String targetCurrency){
 
-    }
 
     @Override
     public void update(ExchangeRate entity) {
