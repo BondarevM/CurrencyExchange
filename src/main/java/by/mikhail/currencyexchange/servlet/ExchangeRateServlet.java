@@ -1,7 +1,6 @@
 package by.mikhail.currencyexchange.servlet;
 
-import by.mikhail.currencyexchange.dto.CurrencyDto;
-import by.mikhail.currencyexchange.service.CurrencyService;
+import by.mikhail.currencyexchange.service.ExchangeRateService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,18 +9,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
-import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-
-
-@WebServlet("/currency/*")
-public class CurrencyServlet extends HttpServlet {
+@WebServlet("/exchangeRate/*")
+public class ExchangeRateServlet extends HttpServlet {
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final CurrencyService currencyService = CurrencyService.getInstance();
-
+    private static final ExchangeRateService exchangeRateService = ExchangeRateService.getInstance();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
@@ -32,11 +26,13 @@ public class CurrencyServlet extends HttpServlet {
             return;
         }
 
-        String code = req.getPathInfo().substring(1);
+        String codes = req.getPathInfo().substring(1);
+        String baseCurrency = codes.substring(0, 3);
+        String targetCurrency = codes.substring(3);
 
         try {
-            if (!currencyService.foundCurrency(code)) {
-                resp.sendError(404, "Currency not found");
+            if(!exchangeRateService.foundExchangeRate(baseCurrency,targetCurrency)){
+                resp.sendError(404,"Exchange rate not found");
                 return;
             }
         } catch (SQLException e) {
@@ -44,12 +40,6 @@ public class CurrencyServlet extends HttpServlet {
             return;
         }
 
-        CurrencyDto currency = currencyService.findByCode(code);
-        String currencyJson = objectMapper.writeValueAsString(currency);
-
-        try (PrintWriter writer = resp.getWriter()) {
-            writer.write(currencyJson);
-        }
 
 
     }

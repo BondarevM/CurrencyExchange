@@ -33,6 +33,16 @@ public class ExchangeRateDao implements Dao<String, ExchangeRate> {
             FROM  ExchangeRates;
             """;
 
+    private final String FIND_BY_CODES = """
+            SELECT *
+            FROM ExchangeRates
+            JOIN Currencies C on C.ID = ExchangeRates.BaseCurrencyId
+            WHERE BaseCurrencyId = (SELECT id
+                                      FROM Currencies
+                                      WHERE Code = ?) AND TargetCurrencyId = (SELECT id
+                                                                                FROM Currencies
+                                                                                WHERE Code = ?);
+            """;
     @Override
     public List<ExchangeRate> findAll() throws SQLException {
         List<ExchangeRate> result = new ArrayList<>();
@@ -51,6 +61,9 @@ public class ExchangeRateDao implements Dao<String, ExchangeRate> {
     @Override
     public Optional<ExchangeRate> findByCode(String code) {
         return Optional.empty();
+    }
+    public Optional<ExchangeRate> findByCodes(String baseCurrency, String targetCurrency){
+
     }
 
     @Override
