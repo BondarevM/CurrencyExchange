@@ -21,7 +21,14 @@ public class CurrencyDao implements Dao<String, Currency> {
     private static final String FIND_BY_CODE = FIND_ALL + """
     WHERE Code = ?
 """;
+    private static final String FIND_BY_ID = FIND_ALL + """
+    WHERE id = ?
+""";
     private static final CurrencyDao INSTANCE = new CurrencyDao();
+    public static CurrencyDao getInstance() {
+        return INSTANCE;
+    }
+
 
     private CurrencyDao() {
     }
@@ -29,9 +36,7 @@ public class CurrencyDao implements Dao<String, Currency> {
 
 
 
-    public static CurrencyDao getInstance() {
-        return INSTANCE;
-    }
+
 
 
     @Override
@@ -66,10 +71,27 @@ public class CurrencyDao implements Dao<String, Currency> {
         }
         return Optional.empty();
     }
+    public Optional<Currency> findById(Integer id) {
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement prepareStatement = connection.prepareStatement(FIND_BY_ID)) {
+            prepareStatement.setInt(1, id);
+
+            ResultSet resultSet = prepareStatement.executeQuery();
+
+            if (resultSet.next()){
+                Currency currency = buildCurrency(resultSet);
+                return Optional.ofNullable(currency);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return Optional.empty();
+    }
 
 
 
-    private Currency buildCurrency(ResultSet resultSet) throws SQLException {
+    public Currency buildCurrency(ResultSet resultSet) throws SQLException {
         Currency currency = new Currency();
         currency.setId(resultSet.getInt("ID"));
         currency.setCode(resultSet.getString("Code"));
