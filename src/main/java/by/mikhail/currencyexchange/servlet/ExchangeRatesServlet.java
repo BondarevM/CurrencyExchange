@@ -19,6 +19,7 @@ import java.util.List;
 public class ExchangeRatesServlet extends HttpServlet {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final ExchangeRateService exchangeRateService = ExchangeRateService.getInstance();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
@@ -30,7 +31,47 @@ public class ExchangeRatesServlet extends HttpServlet {
             String exchangeRatesJson = objectMapper.writeValueAsString(exchangeRates);
             writer.write(exchangeRatesJson);
         } catch (SQLException e) {
-            resp.sendError(500,"Something is wrong with the database");
+            resp.sendError(500, "Something is wrong with the database");
         }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
+        String baseCurrencyCode = req.getParameter("baseCurrencyCode");
+        String targetCurrencyCode = req.getParameter("targetCurrencyCode");
+        String rate = req.getParameter("rate");
+
+        if (baseCurrencyCode == null || targetCurrencyCode == null || rate == null) {
+            resp.sendError(400, "A required form field is missing");
+            return;
+        }
+
+        try {
+            if (exchangeRateService.checkExchangeRateExists(baseCurrencyCode + targetCurrencyCode)) {
+                resp.sendError(409, "The exchange rate for these currencies already exists");
+                return;
+            }
+        } catch (SQLException e) {
+            resp.sendError(500, "Something is wrong with the database");
+            return;
+        }
+
+        if (!exchangeRateService.checkCodePairExists(baseCurrencyCode + targetCurrencyCode)) {
+            resp.sendError(404, "One (or both) currencies from the currency pair does not exist in the database");
+            return;
+        }
+
+        exchangeRateService.update(baseCurrencyCode, targetCurrencyCode, rate);
+        ExchangeRateDto exchangeRate = exchangeRateService.findByCode(baseCurrencyCode + targetCurrencyCode);
+        String exchangeRateJson = objectMapper.writeValueAsString(exchangeRate);
+
+        try (PrintWriter writer = resp.getWriter()) {
+            writer.write(exchangeRateJson);
+        }
+
+
     }
 }

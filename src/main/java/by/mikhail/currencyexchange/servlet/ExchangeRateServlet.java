@@ -31,7 +31,7 @@ public class ExchangeRateServlet extends HttpServlet {
         String codes = req.getPathInfo().substring(1);
 
         try {
-            if(!exchangeRateService.foundExchangeRate(codes)){
+            if(!exchangeRateService.checkExchangeRateExists(codes)){
                 resp.sendError(404,"Exchange rate not found");
                 return;
             }

@@ -14,8 +14,6 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
-import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-
 
 @WebServlet("/currency/*")
 public class CurrencyServlet extends HttpServlet {
@@ -35,7 +33,7 @@ public class CurrencyServlet extends HttpServlet {
         String code = req.getPathInfo().substring(1);
 
         try {
-            if (!currencyService.foundCurrency(code)) {
+            if (!currencyService.checkCurrencyExists(code)) {
                 resp.sendError(404, "Currency not found");
                 return;
             }

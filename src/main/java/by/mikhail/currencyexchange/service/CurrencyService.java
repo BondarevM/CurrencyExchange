@@ -5,9 +5,7 @@ import by.mikhail.currencyexchange.dto.CurrencyDto;
 import by.mikhail.currencyexchange.entity.Currency;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class CurrencyService {
     private static final CurrencyService INSTANCE  = new CurrencyService();
@@ -37,13 +35,17 @@ public class CurrencyService {
         currency.setSign(Sign);
         currencyDao.update(currency);
     }
-    public List<String> findAllCodes() throws SQLException {
-        List<String> result = new ArrayList<>();
-        List<String> all = currencyDao.findAll().stream().map(currency -> new String(currency.getCode())).toList();
+    public List<String> findAllCodes()  {
+        List<String> result = null;
+        try {
+            result = currencyDao.findAll().stream().map(currency -> new String(currency.getCode())).toList();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
-        return all;
+        return result;
     }
-    public boolean foundCurrency(String code) throws SQLException {
+    public boolean checkCurrencyExists(String code) throws SQLException {
         List<String> all = currencyDao.findAll().stream().map(currency -> new String(currency.getCode())).toList();
         for (String s : all){
             if (s.equals(code)){

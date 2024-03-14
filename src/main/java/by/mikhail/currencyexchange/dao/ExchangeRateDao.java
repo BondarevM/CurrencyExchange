@@ -43,7 +43,10 @@ public class ExchangeRateDao implements Dao<String, ExchangeRate> {
                                                                                 FROM Currencies
                                                                                 WHERE Code = ?);
                         """;
-
+    private final String ADD_EXCHANGE_RATE = """
+            INSERT INTO ExchangeRates
+            VALUES (null,?,?,?);
+""";
     @Override
     public List<ExchangeRate> findAll() throws SQLException {
         List<ExchangeRate> result = new ArrayList<>();
@@ -83,6 +86,17 @@ public class ExchangeRateDao implements Dao<String, ExchangeRate> {
 
     @Override
     public void update(ExchangeRate entity) {
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement prepareStatement = connection.prepareStatement(ADD_EXCHANGE_RATE)) {
+            prepareStatement.setInt(1,entity.getBaseCurrency().getId());
+            prepareStatement.setInt(2,entity.getTagretCurrency().getId());
+            prepareStatement.setBigDecimal(3,entity.getRate());
+
+            prepareStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
 

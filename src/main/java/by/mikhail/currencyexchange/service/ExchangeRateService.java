@@ -1,15 +1,18 @@
 package by.mikhail.currencyexchange.service;
 
+import by.mikhail.currencyexchange.dao.CurrencyDao;
 import by.mikhail.currencyexchange.dao.ExchangeRateDao;
-import by.mikhail.currencyexchange.dto.CurrencyDto;
 import by.mikhail.currencyexchange.dto.ExchangeRateDto;
 import by.mikhail.currencyexchange.entity.ExchangeRate;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
 public class ExchangeRateService {
     private static final ExchangeRateDao exchangeRateDao = ExchangeRateDao.getInstance();
+    private static final CurrencyDao currencyDao = CurrencyDao.getInstance();
+    private static final CurrencyService currencyService = CurrencyService.getInstance();
     private static final ExchangeRateService INSTANCE = new ExchangeRateService();
 
     private ExchangeRateService() {
@@ -29,7 +32,9 @@ public class ExchangeRateService {
 //        List<ExchangeRateDto> all = INSTANCE.findAll();
 //        System.out.println(all);
 
-        boolean b = INSTANCE.foundExchangeRate("RUBUSD");
+//        boolean b = INSTANCE.foundExchangeRate("RUBGEL");
+//        System.out.println(b);
+        boolean b = INSTANCE.checkCodePairExists("JPYUSD");
         System.out.println(b);
 
     }
@@ -42,7 +47,7 @@ public class ExchangeRateService {
     }
 
 
-    public boolean foundExchangeRate(String codes) throws SQLException {
+    public boolean checkExchangeRateExists(String codes) throws SQLException {
         String baseCurrency = codes.substring(0, 3);
         String targetCurrency = codes.substring(3);
         List<String> baseCurrencyCodes = exchangeRateDao.findAll().stream().map(exchangeRate ->
@@ -57,6 +62,32 @@ public class ExchangeRateService {
             }
         }
         return false;
+    }
+    public boolean checkCodePairExists(String codes){
+        String baseCurrency = codes.substring(0, 3);
+        String targetCurrency = codes.substring(3);
+
+        List<String> allCodes = currencyService.findAllCodes();
+
+        for (int i = 0; i < allCodes.size(); i++) {
+            if (baseCurrency.equals(allCodes.get(i))){
+                for (int j = 0; j < allCodes.size(); j++) {
+                    if (targetCurrency.equals(allCodes.get(j))){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+    public void update(String baseCurrencyCode, String targetCurrencyCode, String rate) {
+        ExchangeRate exchangeRate = new ExchangeRate();
+        exchangeRate.setBaseCurrency(currencyDao.findByCode(baseCurrencyCode).get());
+        exchangeRate.setTagretCurrency(currencyDao.findByCode(targetCurrencyCode).get());
+        exchangeRate.setRate(new BigDecimal(rate));
+        exchangeRateDao.update(exchangeRate);
     }
 
 
