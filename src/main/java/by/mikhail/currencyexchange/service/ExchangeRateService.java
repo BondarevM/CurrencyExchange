@@ -47,6 +47,7 @@ public class ExchangeRateService {
     }
 
 
+
     public boolean checkExchangeRateExists(String codes) throws SQLException {
         String baseCurrency = codes.substring(0, 3);
         String targetCurrency = codes.substring(3);
@@ -87,7 +88,7 @@ public class ExchangeRateService {
         exchangeRate.setBaseCurrency(currencyDao.findByCode(baseCurrencyCode).get());
         exchangeRate.setTagretCurrency(currencyDao.findByCode(targetCurrencyCode).get());
         exchangeRate.setRate(new BigDecimal(rate));
-        exchangeRateDao.update(exchangeRate);
+        exchangeRateDao.add(exchangeRate);
     }
 
 

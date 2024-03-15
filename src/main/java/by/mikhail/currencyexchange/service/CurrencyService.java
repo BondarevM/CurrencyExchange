@@ -33,7 +33,7 @@ public class CurrencyService {
         currency.setCode(code);
         currency.setFullName(FullName);
         currency.setSign(Sign);
-        currencyDao.update(currency);
+        currencyDao.add(currency);
     }
     public List<String> findAllCodes()  {
         List<String> result = null;

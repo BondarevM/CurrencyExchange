@@ -105,7 +105,7 @@ public class CurrencyDao implements Dao<String, Currency> {
 
 
     @Override
-    public void update(Currency entity) {
+    public void add(Currency entity) {
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement prepareStatement = connection.prepareStatement(ADD_CURRENCY)) {
             prepareStatement.setString(1,entity.getCode());
@@ -126,6 +126,6 @@ public class CurrencyDao implements Dao<String, Currency> {
         currency.setFullName("Rubble");
         currency.setSign("P");
 
-        INSTANCE.update(currency);
+        INSTANCE.add(currency);
     }
 }

@@ -7,6 +7,6 @@ import java.util.Optional;
 public interface Dao<K, T> {
     List<T> findAll() throws SQLException;
     Optional<T> findByCode(K code) throws SQLException;
-    void update (T entity);
+    void add(T entity);
 
 }
