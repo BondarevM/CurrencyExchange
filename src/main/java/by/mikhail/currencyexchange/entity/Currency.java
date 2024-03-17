@@ -2,15 +2,15 @@ package by.mikhail.currencyexchange.entity;
 
 public class Currency {
     private Integer id;
-    private String Code;
-    private String FullName;
-    private String Sign;
+    private String name;
+    private String code;
+    private String sign;
 
     public Currency(Integer id, String code, String fullName, String sign) {
         this.id = id;
-        Code = code;
-        FullName = fullName;
-        Sign = sign;
+        this.code = code;
+        name = fullName;
+        this.sign = sign;
     }
     public Currency(){}
 
@@ -23,36 +23,36 @@ public class Currency {
     }
 
     public String getCode() {
-        return Code;
+        return code;
     }
 
     public void setCode(String code) {
-        Code = code;
+        this.code = code;
     }
 
-    public String getFullName() {
-        return FullName;
+    public String getName() {
+        return name;
     }
 
-    public void setFullName(String fullName) {
-        FullName = fullName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getSign() {
-        return Sign;
+        return sign;
     }
 
     public void setSign(String sign) {
-        Sign = sign;
+        this.sign = sign;
     }
 
     @Override
     public String toString() {
         return "Currency{" +
                "id=" + id +
-               ", Code='" + Code + '\'' +
-               ", FullName='" + FullName + '\'' +
-               ", Sign='" + Sign + '\'' +
+               ", Code='" + code + '\'' +
+               ", FullName='" + name + '\'' +
+               ", Sign='" + sign + '\'' +
                '}';
     }
 }

@@ -82,7 +82,7 @@ public class CurrencyDao implements Dao<String, Currency> {
         Currency currency = new Currency();
         currency.setId(resultSet.getInt("ID"));
         currency.setCode(resultSet.getString("Code"));
-        currency.setFullName(resultSet.getString("FullName"));
+        currency.setName(resultSet.getString("FullName"));
         currency.setSign(resultSet.getString("Sign"));
         return currency;
     }
@@ -92,7 +92,7 @@ public class CurrencyDao implements Dao<String, Currency> {
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement prepareStatement = connection.prepareStatement(ADD_CURRENCY)) {
             prepareStatement.setString(1, entity.getCode());
-            prepareStatement.setString(2, entity.getFullName());
+            prepareStatement.setString(2, entity.getName());
             prepareStatement.setString(3, entity.getSign());
             prepareStatement.executeUpdate();
         } catch (SQLException e) {
@@ -103,7 +103,7 @@ public class CurrencyDao implements Dao<String, Currency> {
     public static void main(String[] args) {
         Currency currency = new Currency();
         currency.setCode("RUB");
-        currency.setFullName("Rubble");
+        currency.setName("Rubble");
         currency.setSign("P");
         INSTANCE.add(currency);
     }

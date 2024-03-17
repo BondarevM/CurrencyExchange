@@ -20,18 +20,18 @@ public class CurrencyService {
     private final CurrencyDao currencyDao = CurrencyDao.getInstance();
     public List<CurrencyDto> findAll() throws SQLException {
         return currencyDao.findAll().stream().map(currency -> new CurrencyDto(
-                currency.getId(),currency.getCode(),currency.getFullName(),currency.getSign()
+                currency.getId(),currency.getCode(),currency.getName(),currency.getSign()
         )).toList();
     }
     public CurrencyDto findByCode(String code){
         return currencyDao.findByCode(code).stream().map(currency -> new CurrencyDto(
-                currency.getId(), currency.getCode(), currency.getFullName(), currency.getSign())).findFirst().get();
+                currency.getId(), currency.getCode(), currency.getName(), currency.getSign())).findFirst().get();
     }
 
     public void update(String code, String FullName, String Sign){
         Currency currency = new Currency();
         currency.setCode(code);
-        currency.setFullName(FullName);
+        currency.setName(FullName);
         currency.setSign(Sign);
         currencyDao.add(currency);
     }

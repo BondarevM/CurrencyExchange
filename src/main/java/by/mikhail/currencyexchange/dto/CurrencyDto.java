@@ -3,42 +3,42 @@ package by.mikhail.currencyexchange.dto;
 import java.util.Objects;
 
 public class CurrencyDto {
-    private final Integer ID;
-    private final String Code;
-    private final String FullName;
-    private final String Sign;
+    private final Integer id;
+    private final String name;
+    private final String code;
+    private final String sign;
 
     public CurrencyDto(Integer ID, String code, String fullName, String sign) {
-        this.ID = ID;
-        Code = code;
-        FullName = fullName;
-        Sign = sign;
+        this.id = ID;
+        this.code = code;
+        name = fullName;
+        this.sign = sign;
     }
 
 
-    public Integer getID() {
-        return ID;
+    public Integer getId() {
+        return id;
     }
 
     public String getCode() {
-        return Code;
+        return code;
     }
 
-    public String getFullName() {
-        return FullName;
+    public String getName() {
+        return name;
     }
 
     public String getSign() {
-        return Sign;
+        return sign;
     }
 
     @Override
     public String toString() {
         return "CurrencyDto{" +
-               "ID=" + ID +
-               ", Code='" + Code + '\'' +
-               ", FullName='" + FullName + '\'' +
-               ", Sign='" + Sign + '\'' +
+               "ID=" + id +
+               ", Code='" + code + '\'' +
+               ", FullName='" + name + '\'' +
+               ", Sign='" + sign + '\'' +
                '}';
     }
 
@@ -47,11 +47,11 @@ public class CurrencyDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CurrencyDto that = (CurrencyDto) o;
-        return Objects.equals(ID, that.ID) && Objects.equals(Code, that.Code) && Objects.equals(FullName, that.FullName) && Objects.equals(Sign, that.Sign);
+        return Objects.equals(id, that.id) && Objects.equals(code, that.code) && Objects.equals(name, that.name) && Objects.equals(sign, that.sign);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ID, Code, FullName, Sign);
+        return Objects.hash(id, code, name, sign);
     }
 }
