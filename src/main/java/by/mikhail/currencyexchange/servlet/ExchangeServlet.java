@@ -19,6 +19,7 @@ import java.util.Optional;
 public class ExchangeServlet extends HttpServlet {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final ExchangeService exchangeService = ExchangeService.getInstance();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
@@ -27,11 +28,10 @@ public class ExchangeServlet extends HttpServlet {
         String targetCurrencyCode = req.getParameter("to");
         String amount = req.getParameter("amount");
 
-
         try {
             Optional<ExchangeResponse> exchangeRateResponse = exchangeService.makeConversion(baseCurrencyCode, targetCurrencyCode, amount);
-            if (!exchangeRateResponse.isPresent()){
-                resp.sendError(404,"Conversion not possible");
+            if (!exchangeRateResponse.isPresent()) {
+                resp.sendError(404, "Conversion not possible");
                 return;
             }
             String exchangeResponseJson = objectMapper.writeValueAsString(exchangeRateResponse.get());
@@ -43,8 +43,5 @@ public class ExchangeServlet extends HttpServlet {
         } catch (SQLException e) {
             resp.sendError(500, "Something wrong with database");
         }
-
-
-
     }
 }

@@ -6,6 +6,7 @@ import java.util.Properties;
 
 public final class PropertiesUtil {
     private static final Properties PROPERTIES = new Properties();
+
     static {
         loadProperties();
     }
@@ -17,7 +18,8 @@ public final class PropertiesUtil {
             throw new RuntimeException(e);
         }
     }
-    public static String getProperty(String key){
+
+    public static String getProperty(String key) {
         return PROPERTIES.getProperty(key);
     }
 

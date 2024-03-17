@@ -25,12 +25,10 @@ public class ExchangeService {
     }
 
     public Optional<ExchangeResponse> makeConversion(String baseCurrencyCode, String targetCurrencyCode, String amount) throws SQLException {
-
-
         Optional<Currency> baseCurrencyOptional = currencyDao.findByCode(baseCurrencyCode);
         Optional<Currency> targetCurrencyOptional = currencyDao.findByCode(targetCurrencyCode);
 
-        if (!baseCurrencyOptional.isPresent() || !targetCurrencyOptional.isPresent()){
+        if (!baseCurrencyOptional.isPresent() || !targetCurrencyOptional.isPresent()) {
             return Optional.empty();
         }
         Currency baseCurrency = baseCurrencyOptional.get();
@@ -38,7 +36,6 @@ public class ExchangeService {
         BigDecimal amountValue = new BigDecimal(amount);
         Optional<ExchangeRate> exchangeRate = exchangeRateDao.findByCode(baseCurrencyCode + targetCurrencyCode);
         Optional<ExchangeRate> convertExchangeRate = exchangeRateDao.findByCode(targetCurrencyCode + baseCurrencyCode);
-
 
         if (!exchangeRate.equals(Optional.empty())) {
             ExchangeResponse exchangeResponse = new ExchangeResponse();
@@ -51,7 +48,6 @@ public class ExchangeService {
         } else {
             return makeConversionByReverseRate(baseCurrencyCode, targetCurrencyCode, amount);
         }
-
     }
 
     private Optional<ExchangeResponse> makeConversionByReverseRate(String baseCurrencyCode, String targetCurrencyCode, String amount) throws SQLException {
@@ -76,9 +72,7 @@ public class ExchangeService {
     }
 
     private Optional<ExchangeResponse> exchangeUsingUsdCurrency(String baseCurrencyCode, String targetCurrencyCode, String amount) throws SQLException {
-
         if ((exchangeRateDao.findByCode("USD" + baseCurrencyCode).isPresent()) && (exchangeRateDao.findByCode("USD" + targetCurrencyCode).isPresent())) {
-
             BigDecimal rateFromBaseCurrencyToUsd = makeConversionByReverseRate(baseCurrencyCode, "USD", amount).get().getRate();
             BigDecimal rateFromUsdToTargetCurrency = makeConversion("USD", targetCurrencyCode, amount).get().getRate();
             BigDecimal resultRate = rateFromBaseCurrencyToUsd.multiply(rateFromUsdToTargetCurrency);

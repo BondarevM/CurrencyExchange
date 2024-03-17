@@ -64,6 +64,5 @@ public class CurrenciesServlet extends HttpServlet {
         try (PrintWriter writer = resp.getWriter()) {
             writer.write(currencyJson);
         }
-
     }
 }

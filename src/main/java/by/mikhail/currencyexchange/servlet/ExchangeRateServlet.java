@@ -90,7 +90,6 @@ public class ExchangeRateServlet extends HttpServlet {
 
         ExchangeRate exchangeRate = exchangeRateDao.findByCode(codes).get();
         exchangeRate.setRate(new BigDecimal(rateValue));
-
         try {
             exchangeRateDao.update(exchangeRate);
         } catch (SQLException e) {
@@ -104,8 +103,5 @@ public class ExchangeRateServlet extends HttpServlet {
         try (PrintWriter writer = resp.getWriter()) {
             writer.write(updateExchangeRateJson);
         }
-
     }
-
-
 }

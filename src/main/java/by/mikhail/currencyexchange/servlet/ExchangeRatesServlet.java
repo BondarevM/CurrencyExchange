@@ -25,7 +25,6 @@ public class ExchangeRatesServlet extends HttpServlet {
         resp.setContentType("application/json");
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-
         try (PrintWriter writer = resp.getWriter()) {
             List<ExchangeRateDto> exchangeRates = exchangeRateService.findAll();
             String exchangeRatesJson = objectMapper.writeValueAsString(exchangeRates);
@@ -48,7 +47,6 @@ public class ExchangeRatesServlet extends HttpServlet {
             resp.sendError(400, "A required form field is missing");
             return;
         }
-
         try {
             if (exchangeRateService.checkExchangeRateExists(baseCurrencyCode + targetCurrencyCode)) {
                 resp.sendError(409, "The exchange rate for these currencies already exists");
@@ -58,12 +56,10 @@ public class ExchangeRatesServlet extends HttpServlet {
             resp.sendError(500, "Something is wrong with the database");
             return;
         }
-
         if (!exchangeRateService.checkCodePairExists(baseCurrencyCode + targetCurrencyCode)) {
             resp.sendError(404, "One (or both) currencies from the currency pair does not exist in the database");
             return;
         }
-
         exchangeRateService.update(baseCurrencyCode, targetCurrencyCode, rate);
         ExchangeRateDto exchangeRate = exchangeRateService.findByCode(baseCurrencyCode + targetCurrencyCode);
         String exchangeRateJson = objectMapper.writeValueAsString(exchangeRate);
@@ -71,7 +67,5 @@ public class ExchangeRatesServlet extends HttpServlet {
         try (PrintWriter writer = resp.getWriter()) {
             writer.write(exchangeRateJson);
         }
-
-
     }
 }

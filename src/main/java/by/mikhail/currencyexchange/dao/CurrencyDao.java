@@ -17,27 +17,20 @@ public class CurrencyDao implements Dao<String, Currency> {
             INSERT INTO Currencies
             VALUES (null,?,?,?);
             """;
-
     private static final String FIND_BY_CODE = FIND_ALL + """
-    WHERE Code = ?
-""";
+                WHERE Code = ?
+            """;
     private static final String FIND_BY_ID = FIND_ALL + """
-    WHERE id = ?
-""";
+                WHERE id = ?
+            """;
     private static final CurrencyDao INSTANCE = new CurrencyDao();
+
     public static CurrencyDao getInstance() {
         return INSTANCE;
     }
 
-
     private CurrencyDao() {
     }
-
-
-
-
-
-
 
     @Override
     public List<Currency> findAll() throws SQLException {
@@ -50,7 +43,6 @@ public class CurrencyDao implements Dao<String, Currency> {
             }
             return result;
         }
-
     }
 
     @Override
@@ -58,38 +50,33 @@ public class CurrencyDao implements Dao<String, Currency> {
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement prepareStatement = connection.prepareStatement(FIND_BY_CODE)) {
             prepareStatement.setString(1, code);
-
             ResultSet resultSet = prepareStatement.executeQuery();
 
-            if (resultSet.next()){
+            if (resultSet.next()) {
                 Currency currency = buildCurrency(resultSet);
                 return Optional.ofNullable(currency);
             }
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return Optional.empty();
     }
+
     public Optional<Currency> findById(Integer id) {
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement prepareStatement = connection.prepareStatement(FIND_BY_ID)) {
             prepareStatement.setInt(1, id);
-
             ResultSet resultSet = prepareStatement.executeQuery();
 
-            if (resultSet.next()){
+            if (resultSet.next()) {
                 Currency currency = buildCurrency(resultSet);
                 return Optional.ofNullable(currency);
             }
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return Optional.empty();
     }
-
-
 
     public Currency buildCurrency(ResultSet resultSet) throws SQLException {
         Currency currency = new Currency();
@@ -97,27 +84,20 @@ public class CurrencyDao implements Dao<String, Currency> {
         currency.setCode(resultSet.getString("Code"));
         currency.setFullName(resultSet.getString("FullName"));
         currency.setSign(resultSet.getString("Sign"));
-
-
         return currency;
-
     }
-
 
     @Override
     public void add(Currency entity) {
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement prepareStatement = connection.prepareStatement(ADD_CURRENCY)) {
-            prepareStatement.setString(1,entity.getCode());
-            prepareStatement.setString(2,entity.getFullName());
+            prepareStatement.setString(1, entity.getCode());
+            prepareStatement.setString(2, entity.getFullName());
             prepareStatement.setString(3, entity.getSign());
-
             prepareStatement.executeUpdate();
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public static void main(String[] args) {
@@ -125,7 +105,6 @@ public class CurrencyDao implements Dao<String, Currency> {
         currency.setCode("RUB");
         currency.setFullName("Rubble");
         currency.setSign("P");
-
         INSTANCE.add(currency);
     }
 }

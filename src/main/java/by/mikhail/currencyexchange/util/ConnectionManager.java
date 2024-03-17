@@ -10,8 +10,11 @@ public class ConnectionManager {
     static {
         loadDriver();
     }
-    private ConnectionManager(){}
-    private static void loadDriver(){
+
+    private ConnectionManager() {
+    }
+
+    private static void loadDriver() {
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
@@ -19,7 +22,7 @@ public class ConnectionManager {
         }
     }
 
-    public static Connection getConnection(){
+    public static Connection getConnection() {
         try {
             return DriverManager.getConnection(PropertiesUtil.getProperty(URL_KEY));
         } catch (SQLException e) {

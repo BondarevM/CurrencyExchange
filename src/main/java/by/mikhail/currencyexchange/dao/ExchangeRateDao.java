@@ -44,14 +44,15 @@ public class ExchangeRateDao implements Dao<String, ExchangeRate> {
                                                                                 WHERE Code = ?);
                         """;
     private final String ADD_EXCHANGE_RATE = """
-            INSERT INTO ExchangeRates
-            VALUES (null,?,?,?);
-""";
+                        INSERT INTO ExchangeRates
+                        VALUES (null,?,?,?);
+            """;
     private final String UPDATE_EXCHANGE_RATE = """
             UPDATE ExchangeRates
             SET Rate = ? 
             WHERE ID = ?;
             """;
+
     @Override
     public List<ExchangeRate> findAll() throws SQLException {
         List<ExchangeRate> result = new ArrayList<>();
@@ -65,7 +66,6 @@ public class ExchangeRateDao implements Dao<String, ExchangeRate> {
         return result;
     }
 
-
     @Override
     public Optional<ExchangeRate> findByCode(String code) {
         String baseCurrency = code.substring(0, 3);
@@ -75,7 +75,6 @@ public class ExchangeRateDao implements Dao<String, ExchangeRate> {
              PreparedStatement prepareStatement = connection.prepareStatement(FIND_BY_CODES)) {
             prepareStatement.setString(1, baseCurrency);
             prepareStatement.setString(2, targetCurrency);
-
             ResultSet resultSet = prepareStatement.executeQuery();
 
             if (resultSet.next()) {
@@ -88,14 +87,13 @@ public class ExchangeRateDao implements Dao<String, ExchangeRate> {
         return Optional.empty();
     }
 
-
     @Override
     public void add(ExchangeRate entity) {
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement prepareStatement = connection.prepareStatement(ADD_EXCHANGE_RATE)) {
-            prepareStatement.setInt(1,entity.getBaseCurrency().getId());
-            prepareStatement.setInt(2,entity.getTagretCurrency().getId());
-            prepareStatement.setBigDecimal(3,entity.getRate());
+            prepareStatement.setInt(1, entity.getBaseCurrency().getId());
+            prepareStatement.setInt(2, entity.getTagretCurrency().getId());
+            prepareStatement.setBigDecimal(3, entity.getRate());
 
             prepareStatement.executeUpdate();
         } catch (SQLException e) {
@@ -106,11 +104,10 @@ public class ExchangeRateDao implements Dao<String, ExchangeRate> {
     public void update(ExchangeRate entity) throws SQLException {
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement prepareStatement = connection.prepareStatement(UPDATE_EXCHANGE_RATE)) {
-            prepareStatement.setBigDecimal(1,entity.getRate());
-            prepareStatement.setInt(2,entity.getId());
+            prepareStatement.setBigDecimal(1, entity.getRate());
+            prepareStatement.setInt(2, entity.getId());
             prepareStatement.executeUpdate();
         }
-
     }
 
     private ExchangeRate buildExchangeRate(ResultSet resultSet) throws SQLException {
@@ -118,11 +115,6 @@ public class ExchangeRateDao implements Dao<String, ExchangeRate> {
         exchangeRate.setId(resultSet.getInt("ID"));
         exchangeRate.setBaseCurrency(currencyDao.findById(resultSet.getInt("BaseCurrencyId")).get());
         exchangeRate.setTagretCurrency(currencyDao.findById(resultSet.getInt("TargetCurrencyId")).get());
-
-
-//        exchangeRate.setBaseCurrency(CurrencyDao.getInstance().buildCurrency(resultSet));
-//        exchangeRate.setTagretCurrency(CurrencyDao.getInstance().buildCurrency(resultSet));
-
         exchangeRate.setRate(resultSet.getBigDecimal("Rate"));
         return exchangeRate;
     }

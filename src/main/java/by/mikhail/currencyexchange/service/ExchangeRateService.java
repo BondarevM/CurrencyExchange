@@ -28,25 +28,11 @@ public class ExchangeRateService {
         )).toList();
     }
 
-    public static void main(String[] args) throws SQLException {
-//        List<ExchangeRateDto> all = INSTANCE.findAll();
-//        System.out.println(all);
-
-//        boolean b = INSTANCE.foundExchangeRate("RUBGEL");
-//        System.out.println(b);
-        boolean b = INSTANCE.checkCodePairExists("JPYUSD");
-        System.out.println(b);
-
-    }
-
     public ExchangeRateDto findByCode(String code){
         return exchangeRateDao.findByCode(code).stream().map(exchangeRate -> new ExchangeRateDto(
                 exchangeRate.getId(),exchangeRate.getBaseCurrency(),exchangeRate.getTagretCurrency(),exchangeRate.getRate()
         )).findFirst().get();
-
     }
-
-
 
     public boolean checkExchangeRateExists(String codes) throws SQLException {
         String baseCurrency = codes.substring(0, 3);
@@ -82,7 +68,6 @@ public class ExchangeRateService {
         return false;
     }
 
-
     public void update(String baseCurrencyCode, String targetCurrencyCode, String rate) {
         ExchangeRate exchangeRate = new ExchangeRate();
         exchangeRate.setBaseCurrency(currencyDao.findByCode(baseCurrencyCode).get());
@@ -90,6 +75,4 @@ public class ExchangeRateService {
         exchangeRate.setRate(new BigDecimal(rate));
         exchangeRateDao.add(exchangeRate);
     }
-
-
 }
