@@ -25,8 +25,16 @@ public class ExchangeService {
     }
 
     public Optional<ExchangeResponse> makeConversion(String baseCurrencyCode, String targetCurrencyCode, String amount) throws SQLException {
-        Currency baseCurrency = currencyDao.findByCode(baseCurrencyCode).get();
-        Currency targetCurrency = currencyDao.findByCode(targetCurrencyCode).get();
+
+
+        Optional<Currency> baseCurrencyOptional = currencyDao.findByCode(baseCurrencyCode);
+        Optional<Currency> targetCurrencyOptional = currencyDao.findByCode(targetCurrencyCode);
+
+        if (!baseCurrencyOptional.isPresent() || !targetCurrencyOptional.isPresent()){
+            return Optional.empty();
+        }
+        Currency baseCurrency = baseCurrencyOptional.get();
+        Currency targetCurrency = targetCurrencyOptional.get();
         BigDecimal amountValue = new BigDecimal(amount);
         Optional<ExchangeRate> exchangeRate = exchangeRateDao.findByCode(baseCurrencyCode + targetCurrencyCode);
         Optional<ExchangeRate> convertExchangeRate = exchangeRateDao.findByCode(targetCurrencyCode + baseCurrencyCode);
@@ -41,7 +49,7 @@ public class ExchangeService {
             exchangeResponse.setConvertedAmount(amountValue.multiply(exchangeRate.get().getRate()));
             return Optional.ofNullable(exchangeResponse);
         } else {
-           return makeConversionByReverseRate(baseCurrencyCode, targetCurrencyCode, amount);
+            return makeConversionByReverseRate(baseCurrencyCode, targetCurrencyCode, amount);
         }
 
     }
@@ -50,10 +58,10 @@ public class ExchangeService {
         Currency baseCurrency = currencyDao.findByCode(baseCurrencyCode).get();
         Currency targetCurrency = currencyDao.findByCode(targetCurrencyCode).get();
         BigDecimal amountValue = new BigDecimal(amount);
-        Optional<ExchangeRate> exchangeRate = exchangeRateDao.findByCode(targetCurrencyCode+baseCurrencyCode);
+        Optional<ExchangeRate> exchangeRate = exchangeRateDao.findByCode(targetCurrencyCode + baseCurrencyCode);
 
-        if (!exchangeRate.equals(Optional.empty())){
-            BigDecimal rate =(new BigDecimal("1")).divide(exchangeRate.get().getRate());
+        if (!exchangeRate.equals(Optional.empty())) {
+            BigDecimal rate = (new BigDecimal("1")).divide(exchangeRate.get().getRate());
             ExchangeResponse exchangeResponse = new ExchangeResponse();
             exchangeResponse.setBaseCurrency(baseCurrency);
             exchangeResponse.setTargetCurrency(targetCurrency);
@@ -61,15 +69,15 @@ public class ExchangeService {
             exchangeResponse.setAmount(amountValue);
             exchangeResponse.setConvertedAmount(amountValue.multiply(rate));
             return Optional.ofNullable(exchangeResponse);
-        } else{
-            return exchangeUsingUsdCurrency(baseCurrencyCode,targetCurrencyCode,amount);
+        } else {
+            return exchangeUsingUsdCurrency(baseCurrencyCode, targetCurrencyCode, amount);
         }
 
     }
 
     private Optional<ExchangeResponse> exchangeUsingUsdCurrency(String baseCurrencyCode, String targetCurrencyCode, String amount) throws SQLException {
 
-        if((exchangeRateDao.findByCode("USD"+baseCurrencyCode).isPresent()) && (exchangeRateDao.findByCode("USD"+targetCurrencyCode).isPresent())){
+        if ((exchangeRateDao.findByCode("USD" + baseCurrencyCode).isPresent()) && (exchangeRateDao.findByCode("USD" + targetCurrencyCode).isPresent())) {
 
             BigDecimal rateFromBaseCurrencyToUsd = makeConversionByReverseRate(baseCurrencyCode, "USD", amount).get().getRate();
             BigDecimal rateFromUsdToTargetCurrency = makeConversion("USD", targetCurrencyCode, amount).get().getRate();
