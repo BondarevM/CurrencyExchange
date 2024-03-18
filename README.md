@@ -19,8 +19,7 @@ ___
 https://github.com/BondarevM/CurrencyExchange.git
 ```
 + Use Apache Tomcat 10 with this configurations
-![img.png](img.png)
-
+![image](https://github.com/BondarevM/CurrencyExchange/assets/99888305/6c1c1f8d-e24f-450f-9a71-1e94b2597e1b)
 + Build and run
 ___
 ## REST API
